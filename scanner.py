@@ -1,4 +1,4 @@
-# meta developer: @FrontendVSCode
+# meta developer:  @NEBULASoftware & @FrontendVSCode
 # scope: hikka_only
 # scope: hikka_min 1.6.2
 # 🔗 Link Scanner PRO — мощный локальный антивирус для ссылок
@@ -19,8 +19,6 @@ from collections import defaultdict
 
 @loader.tds
 class LinkScannerMod(loader.Module):
-    """🛡️ Продвинутый локальный сканер ссылок на вирусы, RAT-панели и майнеры"""
-    
     strings = {
         "name": "LinkScannerPRO",
         "processing": "🔄 Сканирую ссылки...",
@@ -77,9 +75,7 @@ class LinkScannerMod(loader.Module):
             )
         )
         
-        # === РАСШИРЕННАЯ БАЗА ВРЕДОНОСНЫХ ИНДИКАТОРОВ (>2000 паттернов) ===
         self.malicious_patterns = {
-            # RAT панели и C2 серверы
             "rat_panels": [
                 r"njrat.*\.(?:net|com|org|ru|xyz|top|club)",
                 r"quasar.*\.(?:net|com|org|info|online)",
@@ -111,8 +107,6 @@ class LinkScannerMod(loader.Module):
                 r"remote.*admin.*panel.*\.(?:net|com|org)",
                 r"remote.*access.*trojan.*\.(?:net|com|org)"
             ],
-            
-            # Майнеры и пулы
             "miners": [
                 r"pool\.minexmr\.com",
                 r"pool\.supportxmr\.com",
@@ -154,8 +148,6 @@ class LinkScannerMod(loader.Module):
                 r"coinnebula\.com",
                 r"coinblind\.com"
             ],
-            
-            # Фишинг сайты
             "phishing": [
                 r"secure-.*?banking.*\.(?:com|net|org|ru)",
                 r"login.*?verify.*\.(?:com|net|org)",
@@ -187,8 +179,6 @@ class LinkScannerMod(loader.Module):
                 r"two-factor.*?disable.*",
                 r"2fa.*?disable.*"
             ],
-            
-            # Exploit kits и вредоносные скрипты
             "exploit_kits": [
                 r"exploit.*?kit.*\.(?:php|asp|aspx|jsp|cgi)",
                 r"cve-202[0-9]-[0-9]{4,}",
@@ -216,10 +206,8 @@ class LinkScannerMod(loader.Module):
                 r"yii.*?install",
                 r"zend.*?install"
             ],
-            
-            # Известные вредоносные домены и IP (сокращенная версия)
             "malicious_ips": [
-                r"185\.130\.5\.\d+",      # Известные C2 подсети
+                r"185\.130\.5\.\d+",
                 r"185\.244\.25\.\d+",
                 r"185\.165\.29\.\d+",
                 r"185\.141\.27\.\d+",
@@ -289,8 +277,6 @@ class LinkScannerMod(loader.Module):
                 r"217\.182\.203\.\d+",
                 r"217\.182\.211\.\d+"
             ],
-            
-            # Подозрительные расширения файлов
             "dangerous_extensions": [
                 r"\.exe$",
                 r"\.scr$",
@@ -328,8 +314,6 @@ class LinkScannerMod(loader.Module):
                 r"\.msc$",
                 r"\.reg$"
             ],
-            
-            # Вредоносные домены верхнего уровня
             "malicious_tlds": [
                 r"\.xyz$",
                 r"\.top$",
@@ -360,8 +344,6 @@ class LinkScannerMod(loader.Module):
                 r"\.loan$",
                 r"\.download$"
             ],
-            
-            # Крипто-дамперы и стилеры
             "crypto_stealers": [
                 r"electrum.*\.(?:com|net|org).*?wallet",
                 r"blockchain.*?info.*?wallet",
@@ -399,11 +381,10 @@ class LinkScannerMod(loader.Module):
             "threats_found": 0,
             "cached_results": 0
         }
-        self._known_threats_db = {}  # База известных угроз
+        self._known_threats_db = {}
 
     @loader.watcher(only_messages=True, only_pm=False)
     async def watcher(self, message: Message):
-        """Автоматически сканирует ссылки в сообщениях"""
         if not self.config["auto_scan"]:
             return
             
@@ -415,10 +396,9 @@ class LinkScannerMod(loader.Module):
         if not urls:
             return
             
-        # Проверяем rate limit для чата
         chat_id = message.chat_id
         if chat_id in self._ratelimit:
-            if time.time() - self._ratelimit[chat_id] < 30:  # 30 секунд между проверками
+            if time.time() - self._ratelimit[chat_id] < 30:
                 return
         self._ratelimit[chat_id] = time.time()
         
@@ -431,7 +411,6 @@ class LinkScannerMod(loader.Module):
 
     @loader.command()
     async def scan(self, message: Message):
-        """Сканирует ссылки в ответе или тексте"""
         args = utils.get_args_raw(message)
         reply = await message.get_reply_message()
         
@@ -462,7 +441,6 @@ class LinkScannerMod(loader.Module):
 
     @loader.command()
     async def deepscan(self, message: Message):
-        """Глубокое сканирование с анализом IP и DNS"""
         args = utils.get_args_raw(message)
         reply = await message.get_reply_message()
         
@@ -483,7 +461,6 @@ class LinkScannerMod(loader.Module):
         
         results = []
         for url in urls:
-            # Получаем IP адреса домена
             parsed = urlparse(url)
             domain = parsed.netloc.split(':')[0]
             
@@ -504,7 +481,6 @@ class LinkScannerMod(loader.Module):
 
     @loader.command()
     async def scanstats(self, message: Message):
-        """Показывает статистику работы сканера"""
         stats_text = f"📊 **Статистика LinkScanner PRO**\n\n"
         stats_text += f"🔍 Всего сканирований: {self._stats['total_scans']}\n"
         stats_text += f"🚨 Угроз найдено: {self._stats['threats_found']}\n"
@@ -516,14 +492,12 @@ class LinkScannerMod(loader.Module):
 
     @loader.command()
     async def clearcache(self, message: Message):
-        """Очищает кэш сканера"""
         self._cache.clear()
         self._stats['cached_results'] = 0
         await utils.answer(message, self.strings("cache_cleared"))
 
     @loader.command()
     async def addthreat(self, message: Message):
-        """Добавляет угрозу в локальную базу (.addthreat <тип> <паттерн>)"""
         args = utils.get_args_raw(message).split()
         if len(args) < 2:
             await utils.answer(message, "❌ Использование: .addthreat <тип> <паттерн>")
@@ -539,8 +513,6 @@ class LinkScannerMod(loader.Module):
         await utils.answer(message, f"✅ Паттерн добавлен в категорию '{threat_type}'")
 
     def _extract_urls(self, text: str) -> list:
-        """Извлекает все URL из текста (улучшенная версия)"""
-        # Основные паттерны URL
         url_patterns = [
             r'https?://[^\s<>"\'(){}|\\^`\[\]]+(?:\.[^\s<>"\'(){}|\\^`\[\]]+)+',
             r'www\.[^\s<>"\'(){}|\\^`\[\]]+(?:\.[^\s<>"\'(){}|\\^`\[\]]+)+',
@@ -552,7 +524,6 @@ class LinkScannerMod(loader.Module):
             found = re.findall(pattern, text, re.I)
             urls.extend(found)
         
-        # Очистка и нормализация
         cleaned = []
         for url in urls:
             url = url.strip('.,;:!?)]}>"\'').lower()
@@ -563,21 +534,18 @@ class LinkScannerMod(loader.Module):
         return list(set(cleaned))
 
     async def _scan_urls(self, urls: list) -> list:
-        """Сканирует список URL (асинхронная версия)"""
         tasks = [self._scan_single_url(url) for url in urls]
         results = await asyncio.gather(*tasks)
         return results
 
     async def _scan_single_url(self, url: str, deep: bool = False) -> dict:
-        """Сканирует один URL с использованием всех методов"""
         danger_level = 0
         threats = []
         
-        # Проверка кэша
         url_hash = hashlib.md5(url.encode()).hexdigest()
         if url_hash in self._cache and not deep:
             cached = self._cache[url_hash]
-            if time.time() - cached["time"] < 3600:  # 1 час
+            if time.time() - cached["time"] < 3600:
                 self._stats['cached_results'] += 1
                 return cached["result"]
         
@@ -586,7 +554,6 @@ class LinkScannerMod(loader.Module):
         path = parsed.path
         query = parsed.query
         
-        # 1. Проверка по паттернам
         for threat_type, patterns in self.malicious_patterns.items():
             for pattern in patterns:
                 if re.search(pattern, url, re.I) or re.search(pattern, domain, re.I):
@@ -603,14 +570,12 @@ class LinkScannerMod(loader.Module):
                         "danger": base_danger
                     })
         
-        # 2. Эвристический анализ URL
         if self.config["heuristic_analysis"]:
             heuristic_threats = self._heuristic_analysis(url, domain, path, query)
             for threat in heuristic_threats:
                 danger_level += threat["danger"]
                 threats.append(threat)
         
-        # 3. Проверка IP репутации
         if self.config["deep_dns_check"] and deep:
             try:
                 ip_check = await self._check_ip_reputation(domain)
@@ -624,7 +589,6 @@ class LinkScannerMod(loader.Module):
             except:
                 pass
         
-        # 4. Проверка на наличие в локальной базе угроз
         if domain in self._known_threats_db:
             danger_level += 5
             threats.append({
@@ -635,11 +599,10 @@ class LinkScannerMod(loader.Module):
         result = {
             "url": url,
             "domain": domain,
-            "danger_level": min(danger_level, 10),  # Максимум 10
-            "threats": threats[:5]  # Ограничиваем количество угроз в отчете
+            "danger_level": min(danger_level, 10),
+            "threats": threats[:5]
         }
         
-        # Сохраняем в кэш
         self._cache[url_hash] = {
             "time": time.time(),
             "result": result
@@ -648,10 +611,8 @@ class LinkScannerMod(loader.Module):
         return result
 
     def _heuristic_analysis(self, url: str, domain: str, path: str, query: str) -> list:
-        """Эвристический анализ URL"""
         threats = []
         
-        # Слишком много поддоменов
         subdomains = domain.split('.')
         if len(subdomains) > 4:
             threats.append({
@@ -659,28 +620,24 @@ class LinkScannerMod(loader.Module):
                 "danger": 2
             })
         
-        # Подозрительные символы в домене
         if re.search(r'[0-9]{5,}', domain):
             threats.append({
                 "type": "suspicious_numbers",
                 "danger": 1
             })
         
-        # Длинный путь
         if len(path) > 100:
             threats.append({
                 "type": "long_path",
                 "danger": 1
             })
         
-        # Много параметров в query
         if query and len(query.split('&')) > 10:
             threats.append({
                 "type": "too_many_parameters",
                 "danger": 1
             })
         
-        # Подозрительные символы в URL
         suspicious_chars = ['@', '\\', '//', '..', '&&', '||', ';', '`', '$', '%']
         for char in suspicious_chars:
             if char in url:
@@ -690,7 +647,6 @@ class LinkScannerMod(loader.Module):
                 })
                 break
         
-        # Проверка на IP адрес в домене
         try:
             ipaddress.ip_address(domain)
             threats.append({
@@ -703,7 +659,6 @@ class LinkScannerMod(loader.Module):
         return threats
 
     async def _get_ip_info(self, domain: str) -> dict:
-        """Получает IP информацию о домене"""
         try:
             loop = asyncio.get_event_loop()
             ip = await loop.getaddrinfo(domain, None)
@@ -718,7 +673,6 @@ class LinkScannerMod(loader.Module):
         return {"resolved": False}
 
     async def _check_ip_reputation(self, domain: str) -> dict:
-        """Проверяет репутацию IP адреса"""
         try:
             loop = asyncio.get_event_loop()
             ip_info = await loop.getaddrinfo(domain, None)
@@ -727,7 +681,6 @@ class LinkScannerMod(loader.Module):
             
             ip = ip_info[0][4][0]
             
-            # Проверка по известным плохим IP диапазонам
             ip_obj = ipaddress.ip_address(ip)
             
             suspicious_ranges = [
@@ -744,7 +697,6 @@ class LinkScannerMod(loader.Module):
                 if ip_obj in ipaddress.ip_network(cidr):
                     reasons.append(f"IP в подозрительном диапазоне {cidr}")
             
-            # Проверка на Tor exit node
             try:
                 async with aiohttp.ClientSession() as session:
                     async with session.get(f"https://check.torproject.org/exit-addresses") as resp:
@@ -764,36 +716,33 @@ class LinkScannerMod(loader.Module):
             return {"suspicious": False, "error": str(e)}
 
     def _count_patterns(self) -> int:
-        """Подсчитывает общее количество паттернов"""
         total = 0
         for patterns in self.malicious_patterns.values():
             total += len(patterns)
         return total
 
     def _get_db_size(self) -> int:
-        """Возвращает размер базы угроз"""
         return len(self._known_threats_db)
 
     async def _report_danger(self, message: Message, dangerous: list, deep: bool = False):
-        """Формирует отчёт об опасных ссылках"""
-        report = f"🚨 **{self.strings('danger')}** 🚨\n\n"
+        report = f"🚨 {self.strings('danger')} 🚨\n\n"
         
-        for i, item in enumerate(dangerous[:3], 1):  # Показываем первые 3
+        for i, item in enumerate(dangerous[:3], 1):
             danger_level = item['danger_level']
             emoji = "🔴" if danger_level > 5 else "🟠" if danger_level > 2 else "🟡"
             
-            report += f"{emoji} **Угроза #{i}**\n"
-            report += f"🔗 **URL:** `{item['url'][:100]}...`\n"
-            report += f"⚠️ **Уровень:** {danger_level}/10\n"
+            report += f"{emoji} Угроза #{i} \n"
+            report += f"🔗 URL: `{item['url'][:100]}...`\n"
+            report += f"⚠️ Уровень: {danger_level}/10\n"
             
             if 'domain' in item:
-                report += f"🌐 **Домен:** {item['domain']}\n"
+                report += f"🌐 Домен: {item['domain']}\n"
             
             if 'ip_info' in item and item['ip_info'].get('ip'):
-                report += f"📡 **IP:** {item['ip_info']['ip']}\n"
+                report += f"📡 IP: {item['ip_info']['ip']}\n"
             
             if item['threats']:
-                report += "📋 **Типы угроз:**\n"
+                report += "📋 Типы угроз: \n"
                 for threat in item['threats']:
                     report += f"  • {threat['type']}"
                     if 'pattern' in threat:
@@ -802,8 +751,8 @@ class LinkScannerMod(loader.Module):
             report += "\n"
         
         if len(dangerous) > 3:
-            report += f"*... и ещё {len(dangerous) - 3} угроз*\n\n"
+            report += f"... и ещё {len(dangerous) - 3} угроз\n\n"
         
-        report += "🛡️ **НЕ ПЕРЕХОДИ ПО ЭТИМ ССЫЛКАМ!**"
+        report += "🛡️ НЕ ПЕРЕХОДИ ПО ЭТИМ ССЫЛКАМ!"
         
         await utils.answer(message, report)
