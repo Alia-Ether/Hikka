@@ -1,4 +1,4 @@
-# meta developer:  @NEBULASoftware & @FrontendVSCode
+# meta developer: @NEBULASoftware
 # scope: hikka_only
 # scope: hikka_min 1.6.2
 # 🔗 Link Scanner PRO — мощный локальный антивирус для ссылок
@@ -22,8 +22,8 @@ class LinkScannerMod(loader.Module):
     strings = {
         "name": "LinkScannerPRO",
         "processing": "🔄 Сканирую ссылки...",
-        "clean": "✅ Все ссылки чистые!",
-        "danger": "🚨 ОБНАРУЖЕНА УГРОЗА!",
+        "clean": "✅ Все ссылки чистые",
+        "danger": "🚨 ОБНАРУЖЕНА УГРОЗА",
         "no_links": "❌ Ссылок не найдено",
         "stats": "📊 Статистика сканирования",
         "error": "❌ Ошибка при сканировании: {}",
@@ -36,8 +36,8 @@ class LinkScannerMod(loader.Module):
     strings_ru = {
         "name": "LinkScannerPRO",
         "processing": "🔄 Сканирую ссылки...",
-        "clean": "✅ Все ссылки чистые!",
-        "danger": "🚨 ОБНАРУЖЕНА УГРОЗА!",
+        "clean": "✅ Все ссылки чистые",
+        "danger": "🚨 ОБНАРУЖЕНА УГРОЗА",
         "no_links": "❌ Ссылок не найдено",
         "stats": "📊 Статистика сканирования",
         "error": "❌ Ошибка при сканировании: {}",
@@ -477,11 +477,11 @@ class LinkScannerMod(loader.Module):
         if dangerous:
             await self._report_danger(msg, dangerous, deep=True)
         else:
-            await utils.answer(msg, self.strings("deep_scan") + "\n\n✅ Все ссылки чистые!")
+            await utils.answer(msg, self.strings("deep_scan") + "\n\n✅ Все ссылки чистые")
 
     @loader.command()
     async def scanstats(self, message: Message):
-        stats_text = f"📊 **Статистика LinkScanner PRO**\n\n"
+        stats_text = f"📊 Статистика LinkScanner PRO\n\n"
         stats_text += f"🔍 Всего сканирований: {self._stats['total_scans']}\n"
         stats_text += f"🚨 Угроз найдено: {self._stats['threats_found']}\n"
         stats_text += f"💾 Кэшировано результатов: {self._stats['cached_results']}\n"
@@ -731,8 +731,8 @@ class LinkScannerMod(loader.Module):
             danger_level = item['danger_level']
             emoji = "🔴" if danger_level > 5 else "🟠" if danger_level > 2 else "🟡"
             
-            report += f"{emoji} Угроза #{i} \n"
-            report += f"🔗 URL: `{item['url'][:100]}...`\n"
+            report += f"{emoji} Угроза #{i}\n"
+            report += f"🔗 URL: {item['url'][:100]}...\n"
             report += f"⚠️ Уровень: {danger_level}/10\n"
             
             if 'domain' in item:
@@ -742,9 +742,9 @@ class LinkScannerMod(loader.Module):
                 report += f"📡 IP: {item['ip_info']['ip']}\n"
             
             if item['threats']:
-                report += "📋 Типы угроз: \n"
+                report += "📋 Типы угроз:\n"
                 for threat in item['threats']:
-                    report += f"  • {threat['type']}"
+                    report += f"   {threat['type']}"
                     if 'pattern' in threat:
                         report += f" (матчинг: {threat['pattern'][:30]}...)"
                     report += "\n"
@@ -753,6 +753,6 @@ class LinkScannerMod(loader.Module):
         if len(dangerous) > 3:
             report += f"... и ещё {len(dangerous) - 3} угроз\n\n"
         
-        report += "🛡️ НЕ ПЕРЕХОДИ ПО ЭТИМ ССЫЛКАМ!"
+        report += "🛡️ НЕ ПЕРЕХОДИ ПО ЭТИМ ССЫЛКАМ"
         
         await utils.answer(message, report)
