@@ -22,7 +22,7 @@ __version__ = (2, 0, 0)
 
 # meta pic: https://i.postimg.cc/gJhz4t5f/In-Shot-20260306-121833173.jpg
 # meta banner: https://i.postimg.cc/gJhz4t5f/In-Shot-20260306-121833173.jpg
-# meta developer: @FrontendVSCode
+# meta developer: @NEBULASoftware
 # scope: inline
 # scope: hikka_only
 # scope: hikka_min 1.2.10
