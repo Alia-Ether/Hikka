@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
+
 # meta developer: @NEBULASoftware
-# scope: hikka_only
-# scope: hikka_min 1.6.2
 # 📦 Linux Watcher Ultra — мониторинг пакетов и системы в Linux/Termux
 
 __version__ = (6, 0, 0)
